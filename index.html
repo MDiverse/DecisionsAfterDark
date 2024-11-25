@@ -1,23 +1,34 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decisions After Dark</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decisions After Dark</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <h1>Decisions After Dark</h1>
-        <p id="story">You're at a party, and your friend hands you a drink. What will you do?</p>
-        <div id="choices">
-            <button onclick="makeChoice(1)">Accept the drink</button>
-            <button onclick="makeChoice(2)">Politely decline</button>
-            <button onclick="makeChoice(3)">Ask what's in it</button>
-        </div>
-        <p id="score">Score: 0</p>
+  <div class="game-container">
+    <div class="card">
+      <h1 class="card-title">Decisions After Dark</h1>
+      <div class="story-text" id="story-text">
+        Welcome to 'Decisions After Dark'!<br><br>
+        You're at a party, and your friend hands you a drink.<br>
+        What will you do?
+      </div>
+      <div class="options" id="options">
+        <button class="option-button" onclick="handleChoice('accept')">Accept the drink</button>
+        <button class="option-button" onclick="handleChoice('decline')">Politely decline</button>
+        <button class="option-button" onclick="handleChoice('ask')">Ask what's in it</button>
+      </div>
     </div>
-    <script src="script.js"></script>
+    <div id="end-dialog" class="end-dialog">
+      <div class="dialog-content">
+        <h2>Game Over</h2>
+        <p id="end-message"></p>
+        <button onclick="restartGame()">Play Again</button>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
