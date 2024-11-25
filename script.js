@@ -1,66 +1,96 @@
-
-// script.js
-
-let score = 0;
-
-function updateStory(newStory, points) {
-    const storyElement = document.getElementById("story");
-    const scoreElement = document.getElementById("score");
-
-    // Update story text with fade-in effect
-    storyElement.style.opacity = 0;
-    setTimeout(() => {
-        storyElement.textContent = newStory;
-        storyElement.style.opacity = 1;
-    }, 300);
-
-    // Update score
-    if (points !== undefined) {
-        score += points;
-        scoreElement.textContent = `Score: ${score}`;
-        scoreElement.style.animation = "bounce 1s ease-in-out";
-        setTimeout(() => {
-            scoreElement.style.animation = ""; // Reset animation
-        }, 1000);
-    }
-
-    // End game if the scenario is over
-    if (newStory.includes("Game Over") || newStory.includes("Congratulations")) {
-        document.getElementById("choices").innerHTML = `<button onclick="restartGame()">Restart</button>`;
-    }
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #5e4b8b, #222);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-function makeChoice(choice) {
-    if (choice === 1) {
-        updateStory("You start drinking and quickly lose track of how many you’ve had. You decide to drive home anyway. On the way, you’re pulled over by the police for swerving...
-
-Game Over: You’re arrested for DUI.", -10);
-    } else if (choice === 2) {
-        updateStory("Your friend respects your decision, and you stay sober for the night. You drive home safely and wake up refreshed the next day.
-
-Congratulations! You made a responsible choice.", 10);
-    } else if (choice === 3) {
-        updateStory("Your friend tells you it’s a strong cocktail. What do you do next?");
-        document.getElementById("choices").innerHTML = `
-            <button onclick="makeChoice(4)">Accept it anyway</button>
-            <button onclick="makeChoice(5)">Decline the drink</button>
-        `;
-    } else if (choice === 4) {
-        updateStory("The drink hits you harder than expected. You feel unwell. A friend calls a cab for you, and you get home safely but regret drinking.", 0);
-    } else if (choice === 5) {
-        updateStory("You avoid drinking and enjoy the party responsibly.
-
-Good job avoiding unnecessary risks!", 10);
-    }
+/* Game Container */
+.game-container {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
 }
 
-function restartGame() {
-    score = 0;
-    document.getElementById("story").textContent = "You're at a party, and your friend hands you a drink. What will you do?";
-    document.getElementById("score").textContent = `Score: ${score}`;
-    document.getElementById("choices").innerHTML = `
-        <button onclick="makeChoice(1)">Accept the drink</button>
-        <button onclick="makeChoice(2)">Politely decline</button>
-        <button onclick="makeChoice(3)">Ask what's in it</button>
-    `;
+/* Card Styling */
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.card-title {
+  font-size: 2em;
+  color: #f4a261;
+  margin-bottom: 20px;
+}
+
+.story-text {
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  min-height: 150px;
+  white-space: pre-line;
+}
+
+/* Option Buttons */
+.option-button {
+  background-color: #f4a261;
+  border: none;
+  color: white;
+  padding: 15px;
+  margin: 10px;
+  border-radius: 5px;
+  font-size: 1.1em;
+  cursor: pointer;
+  width: 100%;
+}
+
+.option-button:hover {
+  background-color: #e76f51;
+}
+
+/* End Dialog */
+.end-dialog {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog-content {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.dialog-content h2 {
+  color: #d32f2f;
+}
+
+.dialog-content button {
+  background-color: #f4a261;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.dialog-content button:hover {
+  background-color: #e76f51;
 }
