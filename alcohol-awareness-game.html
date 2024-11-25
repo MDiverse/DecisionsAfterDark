@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decisions After Dark</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gradient-to-b from-purple-900 to-black min-h-screen flex items-center justify-center">
+    <div class="max-w-4xl w-full p-4">
+        <div class="bg-white/10 backdrop-blur-sm text-white rounded-lg">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-4 text-center">Decisions After Dark</h1>
+                
+                <div id="message" class="bg-black/30 p-4 rounded-lg mb-4">
+                    Welcome to the Alcohol Awareness Simulator! Make responsible decisions while socializing.
+                </div>
+
+                <div class="grid gap-4 mb-4">
+                    <div>
+                        <label class="text-sm">Health</label>
+                        <div id="healthBar" class="bg-gray-700 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm">Coordination</label>
+                        <div id="coordinationBar" class="bg-gray-700 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm">Judgment</label>
+                        <div id="judgmentBar" class="bg-gray-700 rounded-full h-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-4 text-sm">
+                    <div>Money: $<span id="moneyDisplay">50</span></div>
+                    <div>Drinks: <span id="drinksDisplay">0</span></div>
+                    <div>Time: <span id="timeDisplay">0</span> hours</div>
+                    <div>Had Food: <span id="foodDisplay">No</span></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="foodBtn" class="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded flex items-center justify-center">
+                        <i class="fas fa-apple-alt mr-2"></i>Order Food ($15)
+                    </button>
+                    
+                    <button id="waterBtn" class="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded flex items-center justify-center">
+                        <i class="fas fa-tint mr-2"></i>Drink Water
+                    </button>
+                    
+                    <button id="waitBtn" class="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded flex items-center justify-center">
+                        <i class="fas fa-clock mr-2"></i>Wait 30 Minutes
+                    </button>
+                    
+                    <button id="rideBtn" class="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded flex items-center justify-center">
+                        <i class="fas fa-car mr-2"></i>Call Ride ($25)
+                    </button>
+                    
+                    <button id="drinkBtn" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded flex items-center justify-center">
+                        <i class="fas fa-beer mr-2"></i>Order Drink ($8)
+                    </button>
+                    
+                    <button id="leaveBtn" class="bg-gray-600 hover:bg-gray-700 text-white p-2 rounded">
+                        Leave Venue
+                    </button>
+                </div>
+
+                <div id="gameOverSection" class="hidden mt-4 border-t pt-4">
+                    <h3 class="font-bold">Key Takeaways:</h3>
+                    <ul id="takeaways" class="list-disc pl-4 space-y-1"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const game = {
+            player: {
+                health: 100,
+                coordination: 100,
+                judgment: 100,
+                money: 50,
+                time: 0,
+                drinks: 0,
+                hadFood: false,
+                hasRide: false
+            },
+            gameOver: false,
+
+            elements: {
+                message: document.getElementById('message'),
+                healthBar: document.querySelector('#healthBar > div'),
+                coordinationBar: document.querySelector('#coordinationBar > div'),
+                judgmentBar: document.querySelector('#judgmentBar > div'),
+                moneyDisplay: document.getElementById('moneyDisplay'),
+                drinksDisplay: document.getElementById('drinksDisplay'),
+                timeDisplay: document.getElementById('timeDisplay'),
+                foodDisplay: document.getElementById('foodDisplay'),
+                gameOverSection: document.getElementById('gameOverSection'),
+                takeaways: document.getElementById('takeaways')
+            },
+
+            updateDisplay() {
+                this.elements.healthBar.style.width = `${this.player.health}%`;
+                this.elements.coordinationBar.style.width = `${this.player.coordination}%`;
+                this.elements.judgmentBar.style.width = `${this.player.judgment}%`;
+                this.elements.moneyDisplay.textContent = this.player.money;
+                this.elements.drinksDisplay.textContent = this.player.drinks;
+                this.elements.timeDisplay.textContent = this.player.time;
+                this.elements.foodDisplay.textContent = this.player.hadFood ? 'Yes' : 'No';
+            },
+
+            checkGameOver() {
+                if (this.player.health <= 0) {
+                    this.endGame("Game Over: You've experienced severe health complications.");
+                    return true;
+                }
+                if (this.player.coordination <= 0) {
+                    this.endGame("Game Over: You've lost physical coordination and injured yourself.");
+                    return true;
+                }
+                if (this.player.judgment <= 0) {
+                    this.endGame("Game Over: Poor judgment led to risky decisions.");
+                    return true;
+                }
+                if (this.player.money <= 0) {
+                    this.endGame("Game Over: You've run out of money.");
+                    return true;
+                }
+                return false;
+            },
+
+            endGame(message) {
+                this.gameOver = true;
+                this.elements.message.textContent = message;
+                this.elements.gameOverSection.classList.remove('hidden');
+                
+                const takeaways = [
+                    "Always plan for a safe ride home",
+                    "Eat food before and while drinking",
+                    "Stay hydrated with water",
+                    "Monitor your consumption and know your limits",
+                    "Look out for friends and never drink and drive"
+                ];
+
+                this.elements.takeaways.innerHTML = takeaways
+                    .map(takeaway => `<li>${takeaway}</li>`)
+                    .join('');
+
+                this.disableButtons();
+            },
+
+            disableButtons() {
+                document.querySelectorAll('button').forEach(btn => {
+                    btn.disabled = true;
+                });
+            },
+
+            processDrink() {
+                if (this.player.money < 8) {
+                    this.elements.message.textContent = "You don't have enough money for a drink.";
+                    return;
+                }
+
+                this.player.health = Math.max(0, this.player.health - 10);
+                this.player.coordination = Math.max(0, this.player.coordination - 15);
+                this.player.judgment = Math.max(0, this.player.judgment - 20);
+                this.player.money -= 8;
+                this.player.drinks += 1;
+                this.player.time += 0.5;
+
+                if (!this.player.hadFood) {
+                    this.player.health = Math.max(0, this.player.health - 5);
+                    this.player.coordination = Math.max(0, this.player.coordination - 5);
+                    this.elements.message.textContent = "Not having food intensifies alcohol's effects!";
+                }
+
+                if (this.player.drinks >= 4) {
+                    this.elements.message.textContent = "WARNING: You've consumed multiple drinks in a short time. This could lead to severe health risks.";
+                }
+
+                this.updateDisplay();
+                this.checkGameOver();
+            },
+
+            orderFood() {
+                if (this.player.money < 15) {
+                    this.elements.message.textContent = "You don't have enough money for food.";
+                    return;
+                }
+
+                this.player.money -= 15;
+                this.player.hadFood = true;
+                this.player.health = Math.min(100, this.player.health + 10);
+                this.elements.message.textContent = "You ordered food. This will help slow alcohol absorption.";
+                this.updateDisplay();
+            },
+
+            drinkWater() {
+                this.player.health = Math.min(100, this.player.health + 5);
+                this.elements.message.textContent = "Good choice! Drinking water helps prevent dehydration.";
+                this.updateDisplay();
+            },
+
+            wait() {
+                this.player.time += 0.5;
+                this.player.health = Math.min(100, this.player.health + 5);
+                this.player.coordination = Math.min(100, this.player.coordination + 5);
+                this.player.judgment = Math.min(100, this.player.judgment + 5);
+                this.elements.message.textContent = "You take time to let your body process the alcohol.";
+                this.updateDisplay();
+            },
+
+            callRide() {
+                if (this.player.money < 25) {
+                    this.elements.message.textContent = "You don't have enough money for a ride. TIP: Always set aside money for a safe ride home!";
+                    return;
+                }
+
+                this.player.money -= 25;
+                this.player.hasRide = true;
+
+                if (this.player.drinks > 0) {
+                    this.endGame("Congratulations! You made the responsible choice not to drive!");
+                } else {
+                    this.elements.message.textContent = "You've called a safe ride home. Always a smart choice!";
+                    this.updateDisplay();
+                }
+            },
+
+            leave() {
+                if (this.player.drinks > 0 && !this.player.hasRide) {
+                    this.endGame("Game Over: Never attempt to drive after drinking!");
+                } else {
+                    this.endGame("You've left safely. Good decision!");
+                }
+            },
+
+            init() {
+                document.getElementById('drinkBtn').addEventListener('click', () => this.processDrink());
+                document.getElementById('foodBtn').addEventListener('click', () => this.orderFood());
+                document.getElementById('waterBtn').addEventListener('click', () => this.drinkWater());
+                document.getElementById('waitBtn').addEventListener('click', () => this.wait());
+                document.getElementById('rideBtn').addEventListener('click', () => this.callRide());
+                document.getElementById('leaveBtn').addEventListener('click', () => this.leave());
+            }
+        };
+
+        game.init();
+    </script>
+</body>
+</html>
